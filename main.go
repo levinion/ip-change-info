@@ -27,11 +27,11 @@ func GetIP() string {
 func SendEmail(oldIP string, newIP string) {
 	content := fmt.Sprintf(`Your IP has been changed from %s to %s`, oldIP, newIP)
 	e := email.NewEmail()
-	e.From = "maruka <levinion@126.com>"
-	e.To = []string{"levinion@163.com"}
-	e.Subject = "Your IP has a change!"
+	e.From = "xxx <xxx@126.com>"
+	e.To = []string{"xxx@163.com"}
+	e.Subject = "此处填写标题"
 	e.Text = []byte(content)
-	err := e.Send("smtp.126.com:25", smtp.PlainAuth("", "levinion@126.com", "XWJRKRFQVZHPCXHC", "smtp.126.com"))
+	err := e.Send("smtp.126.com:25", smtp.PlainAuth("", "xxx@126.com", "授权码", "smtp.126.com"))
 	if err != nil {
 		log.Fatal(err)
 	}
