@@ -11,7 +11,7 @@ import (
 )
 
 func NewCustomTick(interval int) *time.Ticker {
-	return time.NewTicker(time.Duration(interval) * time.Second)
+	return time.NewTicker(time.Duration(interval) * time.Minute)
 }
 
 func GetIP() string {
@@ -47,7 +47,9 @@ func CheckIPChange(oldIP *string) {
 
 func main() {
 	oldIP := ""
-	t := NewCustomTick(1)
+	//调整检查时间间隔,默认每15分钟检查一次
+	t := NewCustomTick(15)
+	log.Println("Server starting...")
 	for {
 		<-t.C
 		CheckIPChange(&oldIP)
