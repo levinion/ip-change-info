@@ -10,18 +10,19 @@ import (
 	"github.com/jordan-wright/email"
 )
 
-	var (
-		//发件人
-		From = "username <xxx@126.com>"
-		//收件人
-		To = []string{"xxx@163.com"}
-		//邮件标题
-		Subject = ""
-		//服务器地址
-		addr = "smtp.126.com:25"
-		//授权
-		Auth = smtp.PlainAuth("", "xxx@126.com", "授权码", "smtp.126.com")
-	)
+var (
+	//发件人
+	From = "username <xxx@126.com>"
+	//收件人
+	To = []string{"xxx@163.com"}
+	//邮件标题
+	Subject = "您的 ip 有了新的变化"
+	//服务器地址
+	addr = "smtp.126.com:25"
+	//授权
+	Auth = smtp.PlainAuth("", "xxx@126.com", "授权码", "smtp.126.com")
+)
+
 func NewCustomTick(interval int) *time.Ticker {
 	return time.NewTicker(time.Duration(interval) * time.Minute)
 }
@@ -37,7 +38,7 @@ func GetIP() string {
 }
 
 func SendEmail(oldIP string, newIP string) {
-	content := fmt.Sprintf(`Your IP has been changed from %s to %s`, oldIP, newIP)
+	content := fmt.Sprintf(`你的 ip 从 %s 改变为 %s ，请关注。`, oldIP, newIP)
 	e := email.NewEmail()
 	e.From = From
 	e.To = To
@@ -49,12 +50,13 @@ func SendEmail(oldIP string, newIP string) {
 	}
 }
 
-func EmailTest(){
-	content := fmt.Sprintln(`Email send successfully`)
+func EmailTest() {
+	ip := GetIP()
+	content := fmt.Sprintf(`你收到这封邮件代表你的配置设置正确。你现有的 ip 是： %s`, ip)
 	e := email.NewEmail()
 	e.From = From
 	e.To = To
-	e.Subject = "Your server starting..."
+	e.Subject = "这是一封测试邮件"
 	e.Text = []byte(content)
 	err := e.Send(addr, Auth)
 	if err != nil {
@@ -62,22 +64,23 @@ func EmailTest(){
 	}
 }
 
-func CheckIPChange(oldIP *string) {
+func CheckIPChange(oldIP string) string {
 	newIP := GetIP()
-	if newIP != *oldIP {
-		SendEmail(*oldIP, newIP)
-		oldIP = &newIP
+	if newIP != oldIP {
+		SendEmail(oldIP, newIP)
+		oldIP = newIP
 	}
+	return oldIP
 }
 
 func main() {
 	oldIP := GetIP()
-	//检查时间间隔,默认每15分钟检查一次
-	t := NewCustomTick(15)
+	//检查时间间隔,默认每60分钟检查一次
+	t := NewCustomTick(60)
 	log.Println("Server starting...")
 	EmailTest()
 	for {
 		<-t.C
-		CheckIPChange(&oldIP)
+		oldIP = CheckIPChange(oldIP)
 	}
 }
